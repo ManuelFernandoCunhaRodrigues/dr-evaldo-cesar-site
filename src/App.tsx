@@ -233,7 +233,7 @@ export default function App() {
           </div>
           <div className="about-copy reveal">
             <span className="eyebrow">Sobre o especialista</span>
-            <h2>Cuidado, escuta e atenção em cada consulta</h2>
+            <h2>Conheça o Dr. Evaldo Macau</h2>
             <p>Sou médico otorrinolaringologista, graduado em Medicina pela Universidade Federal do Maranhão — UFMA, com residência médica em Otorrinolaringologia pela Universidade Estadual de Campinas — UNICAMP.</p>
             <p>Possuo Título de Especialista em Otorrinolaringologia pela ABORL-CCF e realizei estágio especializado em Otoneurologia na Universidade de Lisboa, em Portugal.</p>
             <p>Atuo no atendimento de adultos e crianças, realizando consultas, exames e avaliações cirúrgicas. Tenho dedicação especial às cirurgias nasais e faríngeas na infância e ao acompanhamento de pacientes com tontura, vertigem, perda auditiva e zumbido.</p>
