@@ -18,12 +18,17 @@ const symptoms = [
   "Dor ou dificuldade para engolir", "Ronco ou alterações do sono", "Infecções recorrentes",
 ];
 
+const locations = [
+  { name: "Clínica Rhinus", subtitle: "", logo: "/assets/logo/clinica-rhinus.png", address: "Rua das Andirobas, 10, sala 405, Jardim Renascença, São Luís – MA, CEP 65075-040.", reference: "Próximo à Lagoa da Jansen.", mapsUrl: "https://share.google/MG1haMyEcS3pog2UO", whatsappMessage: "Olá! Gostaria de agendar uma consulta com o Dr. Evaldo César Macau na Clínica Rhinus." },
+  { name: "Unidade Medical Center Jaracaty", subtitle: "UDI Hospital", logo: "/assets/logo/udi.svg", address: "Avenida Professor Carlos Cunha, 1, Edifício Medical Center Jaracaty, 2º andar, Jaracaty, São Luís – MA, CEP 65076-820.", reference: "", mapsUrl: "https://www.google.com/maps/search/?api=1&query=Unidade%20Medical%20Center%20Jaracaty%2C%20Avenida%20Professor%20Carlos%20Cunha%2C%201%2C%20Edif%C3%ADcio%20Medical%20Center%20Jaracaty%2C%202%C2%BA%20andar%2C%20Jaracaty%2C%20S%C3%A3o%20Lu%C3%ADs%20-%20MA%2C%2065076-820", whatsappMessage: "Olá! Gostaria de agendar uma consulta com o Dr. Evaldo César Macau na Unidade Medical Center Jaracaty." },
+] as const;
+
 const faqs = [
   { q: "Quando devo procurar um otorrinolaringologista?", a: "Quando sintomas nos ouvidos, nariz, garganta, audição, voz, respiração ou equilíbrio persistirem, se repetirem ou afetarem sua rotina. Em situações urgentes, procure atendimento de emergência." },
   { q: "Quais regiões do corpo são avaliadas pelo otorrino?", a: "O otorrinolaringologista avalia principalmente ouvidos, nariz, garganta e estruturas relacionadas à audição, respiração, voz e equilíbrio." },
   { q: "O atendimento é para adultos e crianças?", a: "Sim. O Dr. Evaldo atende adultos e crianças de qualquer idade, respeitando as necessidades de cada fase da vida." },
   { q: "Como posso agendar uma consulta?", a: "Use um dos botões de agendamento para iniciar uma conversa no WhatsApp e confirmar a disponibilidade diretamente com a equipe." },
-  { q: "Onde fica o consultório?", a: `O atendimento acontece na ${siteConfig.clinic.name}, ${siteConfig.clinic.address}.` },
+  { q: "Onde ficam os locais de atendimento?", a: "O atendimento é realizado na Clínica Rhinus, no Jardim Renascença, e na Unidade Medical Center Jaracaty, no UDI Hospital, em São Luís — MA." },
   { q: "O atendimento é particular ou aceita convênio?", a: "Valores e cobertura de planos de saúde devem ser confirmados diretamente com a equipe antes do agendamento." },
 ];
 
@@ -33,8 +38,8 @@ function track(event: string, detail?: string) {
   layer?.push({ event, detail: detail ?? "" });
 }
 
-function WhatsAppLink({ children, className = "button button-primary", placement }: { children: React.ReactNode; className?: string; placement: string }) {
-  return <a className={className} href={whatsappUrl} target="_blank" rel="noreferrer" onClick={() => track("click_whatsapp", placement)}>{children}</a>;
+function WhatsAppLink({ children, className = "button button-primary", placement, message }: { children: React.ReactNode; className?: string; placement: string; message?: string }) {
+  return <a className={className} href={whatsappUrl(message)} target="_blank" rel="noreferrer" onClick={() => track("click_whatsapp", placement)}>{children}</a>;
 }
 
 export function SiteClient() {
@@ -56,7 +61,7 @@ export function SiteClient() {
         "@type": "Physician",
         name: siteConfig.doctor.name,
         medicalSpecialty: "Otolaryngologic",
-        address: { "@type": "PostalAddress", streetAddress: "Rua das Juçaras, Edifício Executive Lake Center, sala 405", addressLocality: "São Luís", addressRegion: "MA", addressCountry: "BR" },
+        location: locations.map((location) => ({ "@type": "MedicalClinic", name: location.name === "Clínica Rhinus" ? "Executive Lake Center" : "Unidade Medical Center Jaracaty – UDI Hospital", address: { "@type": "PostalAddress", streetAddress: location.name === "Clínica Rhinus" ? "Rua das Andirobas, 10, sala 405, Jardim Renascença" : "Avenida Professor Carlos Cunha, 1, Edifício Medical Center Jaracaty, 2º andar, Jaracaty", addressLocality: "São Luís", addressRegion: "MA", postalCode: location.name === "Clínica Rhinus" ? "65075-040" : "65076-820", addressCountry: "BR" } })),
       },
       {
         "@type": "FAQPage",
@@ -136,6 +141,10 @@ export function SiteClient() {
             </div>
             <div className="about-copy"><p className="eyebrow">Sobre o especialista</p><h2>Cuidado, escuta e atenção em cada consulta</h2><p>O Dr. Evaldo César Macau é médico otorrinolaringologista, graduado pela Universidade Federal do Maranhão e com residência médica em Otorrinolaringologia pela UNICAMP.</p><p>Possui Título de Especialista pela ABORL-CCF e realizou estágio especializado em Otoneurologia na Universidade de Lisboa. Atua no atendimento de adultos e crianças, com dedicação especial às cirurgias nasais e faríngeas na infância e ao cuidado de pacientes com tontura, vertigem, perda auditiva e zumbido.</p><div className="about-quote">“Procuro explicar cada etapa de maneira clara e oferecer um atendimento acolhedor e individualizado.”</div><WhatsAppLink placement="sobre">Agendar uma consulta <span aria-hidden="true">↗</span></WhatsAppLink></div>
           </div>
+        </section>
+
+        <section className="section locations" aria-labelledby="locations-title">
+          <div className="container"><div className="section-heading centered"><p className="eyebrow">Onde encontrar</p><h2 id="locations-title">Locais de atendimento</h2><p>Escolha a unidade mais conveniente e entre em contato para agendar sua consulta com o Dr. Evaldo César Macau.</p></div><div className="locations-grid">{locations.map((location) => <article className="location-card" key={location.name}><img className="location-logo" src={location.logo} alt={`Logotipo da ${location.name}`} /><h3>{location.name}</h3>{location.subtitle && <p className="location-subtitle">{location.subtitle}</p>}<address>{location.address}</address>{location.reference && <p className="location-reference">{location.reference}</p>}<div className="location-actions"><a className="button button-secondary" href={location.mapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Ver rota para ${location.name}`} onClick={() => track("click_directions", location.name)}>Ver rota <span aria-hidden="true">→</span></a><WhatsAppLink placement={`local_${location.name}`} message={location.whatsappMessage}>Agendar nesta unidade</WhatsAppLink></div></article>)}</div></div>
         </section>
 
         <section className="section symptoms">

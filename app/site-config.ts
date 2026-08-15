@@ -7,8 +7,8 @@ export const siteConfig = {
   },
   clinic: {
     name: "Clínica Rhinus",
-    address: "Rua das Juçaras, Edifício Executive Lake Center, sala 405, Jardim Renascença — São Luís, MA",
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica+Rhinus+Executive+Lake+Center+S%C3%A3o+Lu%C3%ADs+MA",
+    address: "Rua das Andirobas, 10, sala 405, Jardim Renascença — São Luís, MA, CEP 65075-040",
+    mapsUrl: "https://share.google/MG1haMyEcS3pog2UO",
     hours: "Consulte a disponibilidade com a equipe",
   },
   contact: {
@@ -19,8 +19,9 @@ export const siteConfig = {
   },
 } as const;
 
-const whatsappMessage = encodeURIComponent("Olá! Gostaria de consultar a disponibilidade para uma avaliação com o Dr. Evaldo César Macau.");
-
-export const whatsappUrl = siteConfig.contact.whatsappNumber
-  ? `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${whatsappMessage}`
-  : `https://wa.me/?text=${whatsappMessage}`;
+export function whatsappUrl(message = "Olá! Gostaria de consultar a disponibilidade para uma avaliação com o Dr. Evaldo César Macau.") {
+  const encodedMessage = encodeURIComponent(message);
+  return siteConfig.contact.whatsappNumber
+    ? `https://wa.me/${siteConfig.contact.whatsappNumber}?text=${encodedMessage}`
+    : `https://wa.me/?text=${encodedMessage}`;
+}
