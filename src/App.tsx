@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import {
   ArrowRight, AtSign, CalendarCheck, Check, ChevronDown, CircleAlert, Clock3,
-  Ear, HeartHandshake, MapPin, Menu, MessageCircle, Mic2,
+  Ear, HeartHandshake, MapPin, Menu, MessageCircle,
   Phone, ShieldCheck, Sparkles, Stethoscope, UserRoundCheck, X,
 } from 'lucide-react'
 import { contactText, siteConfig, trackEvent, whatsappUrl } from './config'
@@ -14,9 +14,9 @@ const navItems = [
 const specialties = [
   { icon: 'nose', title: 'Nariz e respiração', text: 'Avaliação de rinite, sinusite, obstrução nasal, desvio de septo e outras alterações que podem dificultar a respiração.', className: 'nose' },
   { icon: Ear, title: 'Ouvido e audição', text: 'Investigação de dores no ouvido, infecções, perda auditiva, sensação de ouvido entupido e outras alterações auditivas.', className: 'ear' },
-  { icon: Sparkles, title: 'Otoneuro: tontura, vertigem e zumbido', text: 'Atendimento em otoneuro para avaliação de sintomas relacionados ao equilíbrio e à audição, como tontura, vertigem, labirintite e zumbido.', className: 'balance' },
-  { icon: Mic2, title: 'Garganta, amígdalas e adenoide', text: 'Acompanhamento de amigdalites, alterações da garganta, aumento das adenoides, ronco e dificuldades respiratórias.', className: 'throat' },
-  { icon: HeartHandshake, title: 'Otorrinolaringologia infantil', text: 'Atendimento cuidadoso para crianças com problemas respiratórios, infecções recorrentes, alterações auditivas, amígdalas ou adenoides.', className: 'kids' },
+  { icon: 'dizziness', title: 'Otoneuro: tontura, vertigem e zumbido', text: 'Atendimento em otoneuro para avaliação de sintomas relacionados ao equilíbrio e à audição, como tontura, vertigem, labirintite e zumbido.', className: 'balance' },
+  { icon: 'throat', title: 'Garganta, amígdalas e adenoide', text: 'Acompanhamento de amigdalites, alterações da garganta, aumento das adenoides, ronco e dificuldades respiratórias.', className: 'throat' },
+  { icon: 'baby', title: 'Otorrinolaringologia infantil', text: 'Atendimento cuidadoso para crianças com problemas respiratórios, infecções recorrentes, alterações auditivas, amígdalas ou adenoides.', className: 'kids' },
   { icon: Stethoscope, title: 'Avaliação cirúrgica', text: 'Avaliação para cirurgias otorrinolaringológicas, com orientações sobre indicação, preparação e acompanhamento do procedimento.', className: 'surgery' },
 ] as const
 
@@ -45,6 +45,18 @@ const locations = [
 
 function NoseIcon() {
   return <span className="nose-icon" aria-hidden="true"><img src="/images/icone-nariz.svg" alt="" /></span>
+}
+
+function DizzinessIcon() {
+  return <img className="dizziness-icon" src="/images/icone-tontura-cabeca.svg" alt="" aria-hidden="true" />
+}
+
+function ThroatIcon() {
+  return <img className="throat-icon" src="/images/icone-dor-garganta.svg" alt="" aria-hidden="true" />
+}
+
+function BabyIcon() {
+  return <img className="baby-icon" src="/images/icone-bebe-azul.svg" alt="" aria-hidden="true" />
 }
 
 const symptoms = [
@@ -205,7 +217,7 @@ export default function App() {
           <SectionTitle eyebrow="Ouvidos, nariz e garganta" title="Áreas de atendimento" text="Avaliação especializada para adultos e crianças, respeitando as necessidades de cada fase da vida." centered />
           <div className="specialty-grid">
             {specialties.map(({ icon: Icon, title, text, className }, i) => <article className={`specialty-card ${className} reveal`} style={{ '--delay': `${i * 90}ms` } as React.CSSProperties} key={title}>
-              <div className="specialty-icon">{Icon === 'nose' ? <NoseIcon /> : <Icon strokeWidth={1.7} />}</div><span className="card-number">0{i + 1}</span><h3>{title}</h3><p>{text}</p><a href="#sintomas">Saiba mais <ArrowRight size={18} /></a>
+              <div className="specialty-icon">{Icon === 'nose' ? <NoseIcon /> : Icon === 'dizziness' ? <DizzinessIcon /> : Icon === 'throat' ? <ThroatIcon /> : Icon === 'baby' ? <BabyIcon /> : <Icon strokeWidth={1.7} />}</div><span className="card-number">0{i + 1}</span><h3>{title}</h3><p>{text}</p><a href="#sintomas">Saiba mais <ArrowRight size={18} /></a>
             </article>)}
           </div>
           <div className="center-action reveal"><WhatsAppLink source="after-specialties">Quero agendar uma avaliação <MessageCircle size={19} /></WhatsAppLink></div>

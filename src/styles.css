@@ -93,9 +93,12 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -.04em; }
 .specialty-card::before { content: ''; position: absolute; width: 150px; height: 150px; right: -55px; top: -55px; border-radius: 50%; background: rgba(0,146,199,.06); }
 .specialty-card:hover { transform: translateY(-7px); border-color: rgba(0,146,199,.3); box-shadow: var(--shadow); }
 .specialty-icon { width: 72px; height: 72px; display: grid; place-items: center; color: var(--vivid); border-radius: 22px; background: linear-gradient(145deg, #eaf8fd, #ddecff); }
-.specialty-icon svg { width: 36px; height: 36px; }
+.specialty-icon svg { width: 38px; height: 38px; }
 .nose-icon { width: 38px; height: 38px; overflow: hidden; display: block; border-radius: 10px; }
 .nose-icon img { width: 91px; max-width: none; height: 91px; display: block; transform: translate(-27px, -23px); }
+.dizziness-icon { width: 64px; height: 64px; object-fit: contain; }
+.throat-icon { width: 48px; height: 48px; object-fit: contain; }
+.baby-icon { width: 66px; height: 66px; object-fit: contain; }
 .card-number { position: absolute; right: 26px; top: 27px; color: #bac7dc; font-weight: 800; }
 .specialty-card h3 { margin: 25px 0 10px; font-size: 1.4rem; }
 .specialty-card p { font-size: .91rem; }
