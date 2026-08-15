@@ -6,7 +6,7 @@ import { siteConfig, whatsappUrl } from "./site-config";
 const specialties = [
   { code: "N", title: "Nariz e respiração", text: "Avaliação de rinite, sinusite, obstrução nasal, desvio de septo e outras alterações da respiração." },
   { code: "O", title: "Ouvido e audição", text: "Investigação de dores, infecções, perda auditiva, ouvido entupido e outras alterações auditivas." },
-  { code: "E", title: "Tontura, vertigem e zumbido", text: "Avaliação de sintomas relacionados ao equilíbrio e à audição, como tontura, vertigem e zumbido." },
+  { code: "E", icon: "/assets/icons/tontura-cabeca.svg", title: "Tontura, vertigem e zumbido", text: "Avaliação de sintomas relacionados ao equilíbrio e à audição, como tontura, vertigem e zumbido." },
   { code: "G", title: "Garganta, amígdalas e adenoide", text: "Acompanhamento de alterações da garganta, amigdalites, ronco e dificuldades respiratórias." },
   { code: "I", title: "Otorrino infantil", text: "Atendimento cuidadoso para crianças com problemas respiratórios, auditivos, de amígdalas ou adenoides." },
   { code: "C", title: "Avaliação cirúrgica", text: "Orientações claras sobre indicação, preparação e acompanhamento de procedimentos otorrinolaringológicos." },
@@ -127,7 +127,7 @@ export function SiteClient() {
           <div className="container">
             <div className="section-heading split-heading"><div><p className="eyebrow">Áreas de atendimento</p><h2>Sua saúde merece atenção especializada</h2></div><p>Uma avaliação cuidadosa ajuda a investigar sintomas e orientar a conduta adequada para cada caso.</p></div>
             <div className="specialty-grid">
-              {specialties.map((item, index) => <article className={`specialty-card ${index === 0 ? "featured" : ""}`} key={item.title}><span className="specialty-icon" aria-hidden="true">{item.code}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#contato">Saiba mais <span aria-hidden="true">→</span></a></article>)}
+              {specialties.map((item, index) => <article className={`specialty-card ${index === 0 ? "featured" : ""}`} key={item.title}><span className="specialty-icon" aria-hidden="true">{item.icon ? <img src={item.icon} alt="" /> : item.code}</span><h3>{item.title}</h3><p>{item.text}</p><a href="#contato">Saiba mais <span aria-hidden="true">→</span></a></article>)}
             </div>
             <div className="section-cta"><p>Não sabe qual atendimento procurar?</p><WhatsAppLink className="button button-secondary" placement="especialidades">Fale com a equipe</WhatsAppLink></div>
           </div>
