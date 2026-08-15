@@ -168,7 +168,7 @@ export default function App() {
         <div className="hero-orb orb-one" /><div className="hero-orb orb-two" />
         <div className="container hero-grid">
           <div className="hero-copy reveal visible">
-            <span className="eyebrow"><MapPin size={15} /> Otorrinolaringologista em São Luís do Maranhão — MA</span>
+            <span className="eyebrow"><MapPin size={15} /> Otorrinolaringologista em São Luís — MA</span>
             <h1>Cuidado especializado para a saúde do <em>ouvido, nariz e garganta</em></h1>
             <p>Atendimento otorrinolaringológico para adultos e crianças, com escuta atenta, explicações claras e acompanhamento individualizado.</p>
             <div className="doctor-id"><strong>Dr. Evaldo César Macau</strong><span>Otorrinolaringologista · CRM-MA 10415 · RQE 3698</span></div>
