@@ -187,6 +187,21 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -.04em; }
 .reviews-action { display: grid; align-content: center; justify-items: start; }
 .reviews-action > strong { color: #64def3; font-size: 4.5rem; line-height: 1; }
 .reviews-action > span { margin: 6px 0 20px; color: #d3def0; font-size: .85rem; font-weight: 700; }
+.patient-reviews { margin-top: 30px; }
+.reviews-carousel-heading { margin-bottom: 18px; }
+.reviews-carousel-heading h3 { margin: 12px 0 0; font-size: clamp(1.25rem, 4vw, 1.8rem); }
+.patient-reviews-track { display: flex; gap: 16px; overflow-x: auto; padding: 2px 2px 18px; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; overscroll-behavior-inline: contain; }
+.patient-reviews-track::-webkit-scrollbar { display: none; }
+.patient-review { flex: 0 0 calc(100% - 4px); scroll-snap-align: start; display: flex; flex-direction: column; min-height: 100%; padding: 22px; border: 1px solid var(--line); border-radius: 22px; background: #fff; box-shadow: 0 12px 30px rgba(0,27,98,.07); }
+.patient-review-header { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; gap: 10px; }
+.review-avatar { width: 34px; height: 34px; display: grid; place-items: center; color: #006f63; background: #d9f2ed; border-radius: 50%; font-size: .78rem; font-weight: 800; }
+.patient-review h3 { margin: 0; font-size: .9rem; letter-spacing: -.02em; }
+.patient-review blockquote { margin: 20px 0; color: #263752; font-size: .91rem; line-height: 1.7; }
+.patient-review footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 9px 14px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); color: #68758a; font-size: .66rem; }
+.patient-review footer a { display: inline-flex; align-items: center; gap: 5px; color: var(--vivid); font-weight: 800; }
+.reviews-carousel-dots { display: flex; justify-content: center; align-items: center; gap: 9px; margin-top: 2px; }
+.reviews-carousel-dots button { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: #c6d2e4; cursor: pointer; transition: width .25s, background .25s; }
+.reviews-carousel-dots button.active { width: 26px; border-radius: 999px; background: var(--vivid); }
 
 .faq-grid { display: grid; gap: 32px; }
 .text-link { display: inline-flex; align-items: center; gap: 8px; color: var(--vivid); font-weight: 800; font-size: .89rem; }
@@ -208,8 +223,10 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -.04em; }
 .contact-copy h2 { margin: 16px 0 12px; color: #fff; font-size: clamp(2rem, 8vw, 3rem); line-height: 1.08; }
 .contact-copy p { color: #cbd8ec; }
 .contact-info { display: grid; gap: 12px; }
-.contact-info > div { display: flex; gap: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 15px; background: rgba(255,255,255,.07); }
-.contact-info svg { width: 19px; color: #69ddf3; }
+.contact-info > div, .contact-info > a { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 15px; background: rgba(255,255,255,.07); }
+.contact-info > a { transition: background .25s, border-color .25s, transform .25s; }
+.contact-info > a:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.22); transform: translateY(-2px); }
+.contact-info svg { width: 20px; height: 20px; flex: 0 0 auto; color: #69ddf3; stroke-width: 2; }
 .contact-info span, .contact-info small, .contact-info strong { display: block; }
 .contact-info small { color: #a9bbd6; font-size: .66rem; }
 .contact-info strong { margin-top: 4px; color: #fff; font-size: .77rem; }
@@ -246,6 +263,7 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -.04em; }
   .specialty-card { min-height: 355px; }
   .differential-grid { grid-template-columns: repeat(4, 1fr); }
   .journey-grid { grid-template-columns: repeat(3, 1fr); }
+  .patient-review { flex-basis: calc((100% - 16px) / 2); }
   .contact-card { padding: 45px; }
   .footer-grid { grid-template-columns: 1.6fr 1fr 1fr; }
   .floating-whatsapp { width: auto; padding: 0 16px; }
@@ -290,6 +308,8 @@ h1, h2, h3 { color: var(--navy); letter-spacing: -.04em; }
   .symptom-list { grid-template-columns: repeat(2, 1fr); }
   .faq-grid { grid-template-columns: .78fr 1.22fr; gap: 85px; }
   .reviews-card { grid-template-columns: 1.25fr .75fr; align-items: center; padding: 52px 58px; }
+  .patient-reviews-track { gap: 20px; }
+  .patient-review { flex-basis: calc((100% - 40px) / 3); }
   .contact-card { grid-template-columns: 1.1fr .9fr; align-items: center; padding: 58px 62px; }
   .footer-bottom { grid-template-columns: 1fr 1fr; }
   .footer-bottom p:last-child { text-align: right; }

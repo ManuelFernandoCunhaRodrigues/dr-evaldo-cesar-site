@@ -1,8 +1,8 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
-  ArrowRight, AtSign, CalendarCheck, Check, ChevronDown, CircleAlert, Clock3,
+  ArrowRight, CalendarCheck, Check, ChevronDown, CircleAlert, Clock3,
   Ear, HeartHandshake, MapPin, Menu, MessageCircle,
-  Phone, ShieldCheck, Sparkles, Stethoscope, UserRoundCheck, X,
+  PhoneCall, ShieldCheck, Sparkles, Stethoscope, UserRoundCheck, X,
 } from 'lucide-react'
 import { contactText, siteConfig, trackEvent, whatsappUrl } from './config'
 
@@ -59,6 +59,10 @@ function BabyIcon() {
   return <img className="baby-icon" src="/images/icone-bebe-azul.svg" alt="" aria-hidden="true" />
 }
 
+function InstagramIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" /><path d="M17.5 6.5h.01" /></svg>
+}
+
 const symptoms = [
   'Dificuldade para respirar pelo nariz', 'Rinite ou sinusite recorrente', 'Dores de ouvido',
   'Zumbido', 'Redução da audição', 'Tonturas ou alterações de equilíbrio',
@@ -71,6 +75,84 @@ const differentials = [
   { icon: UserRoundCheck, title: 'Cuidado individualizado', text: 'Cada conduta é definida conforme as necessidades e características do paciente.' },
   { icon: ShieldCheck, title: 'Formação especializada', text: 'Experiência direcionada ao cuidado do ouvido, nariz, garganta, respiração, audição e equilíbrio.' },
 ]
+
+const patientReviews = [
+  {
+    name: 'Cynthia Amaral', verified: 'Opinião verificada', date: '9 de agosto de 2024', location: 'Clínica Rhinus',
+    text: 'Médico excelente, hoje toda a nossa família consulta com ele, nos traz segurança, atendimento personalizado, confiança no que faz e, o melhor, saímos satisfeitos e curados. Jamais vou esquecer o que fez pelo meu pai, hoje um homem curado, sem sofrimentos. Graças a Deus e à competência do Dr. Evaldo Macau.',
+  },
+  {
+    name: 'Luiza', verified: 'Consulta verificada', date: '16 de setembro de 2022', location: 'Pronto Otorrino',
+    text: 'Adorei a consulta, primeira vez, mas o atendimento é super-rápido, sem muita espera e com comodidade. O Dr. é supergente boa, me fez ficar sem perguntas e atendeu minhas expectativas como mãe.',
+  },
+  {
+    name: 'Karla', verified: 'Consulta verificada', date: '12 de setembro de 2024', location: 'Clínica Rhinus',
+    text: 'Excelente profissional, tirou todas as minhas dúvidas e é bem prestativo. Muito obrigado, doutor.',
+  },
+  {
+    name: 'A. R. de Carvalho', verified: 'Opinião verificada', date: '30 de agosto de 2024', location: 'Clínica Rhinus',
+    text: 'Dr. Evaldo tem sido um profissional empático, esclarecedor e certeiro!',
+  },
+  {
+    name: 'Paulo César Rodrigues Lima', verified: 'Consulta verificada', date: '27 de fevereiro de 2025', location: 'Clínica Rhinus',
+    text: 'Excelente médico, muito atencioso e educado e me deixou muito mais tranquilo.',
+  },
+  {
+    name: 'Ticiana', verified: 'Opinião verificada', date: '20 de fevereiro de 2022', location: 'Pronto Otorrino',
+    text: 'Excelente médico, competente, atencioso, diagnóstico e tratamento adequados, sem falar da pontualidade e da explicação detalhada sobre o problema.',
+  },
+] as const
+
+function PatientReviewsCarousel() {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [cardsPerView, setCardsPerView] = useState(1)
+  const [activePage, setActivePage] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const pageCount = Math.ceil(patientReviews.length / cardsPerView)
+
+  useEffect(() => {
+    const updateCardsPerView = () => setCardsPerView(window.innerWidth >= 900 ? 3 : window.innerWidth >= 600 ? 2 : 1)
+    updateCardsPerView()
+    window.addEventListener('resize', updateCardsPerView)
+    return () => window.removeEventListener('resize', updateCardsPerView)
+  }, [])
+
+  useEffect(() => {
+    setActivePage((current) => Math.min(current, pageCount - 1))
+  }, [pageCount])
+
+  useEffect(() => {
+    const track = trackRef.current
+    const card = track?.querySelectorAll<HTMLElement>('.patient-review')[activePage * cardsPerView]
+    if (!track || !card) return
+    track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' })
+  }, [activePage, cardsPerView])
+
+  useEffect(() => {
+    if (isPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => setActivePage((current) => (current + 1) % pageCount), 2500)
+    return () => window.clearInterval(timer)
+  }, [isPaused, pageCount])
+
+  return <div className="container patient-reviews reveal" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onFocusCapture={() => setIsPaused(true)} onBlurCapture={() => setIsPaused(false)}>
+    <div className="reviews-carousel-heading">
+      <div><span className="eyebrow">Opiniões verificadas</span><h3>Experiências compartilhadas por pacientes</h3></div>
+    </div>
+    <div className="patient-reviews-track" ref={trackRef} role="region" aria-label="Opiniões dos pacientes" tabIndex={0}>
+      {patientReviews.map(({ name, date, location, text }) => <article className="patient-review" key={`${name}-${date}`}>
+        <div className="patient-review-header">
+          <span className="review-avatar" aria-hidden="true">{name.charAt(0)}</span>
+          <h3>{name}</h3>
+        </div>
+        <blockquote>“{text}”</blockquote>
+        <footer><span>{date} · {location}</span><a href={siteConfig.contact.doctoralia} target="_blank" rel="noreferrer">Doctoralia <ArrowRight size={15} /></a></footer>
+      </article>)}
+    </div>
+    <div className="reviews-carousel-dots" aria-label="Navegação das opiniões">
+      {Array.from({ length: pageCount }, (_, index) => <button className={index === activePage ? 'active' : ''} type="button" aria-label={`Ir para o grupo ${index + 1} de opiniões`} aria-current={index === activePage ? 'true' : undefined} onClick={() => setActivePage(index)} key={index} />)}
+    </div>
+  </div>
+}
 
 const faqs = [
   ['Quando devo procurar um otorrinolaringologista?', 'Quando houver sintomas persistentes ou recorrentes relacionados à audição, nariz, garganta, voz, equilíbrio, respiração ou sono. A avaliação médica ajuda a compreender cada caso.'],
@@ -308,6 +390,7 @@ export default function App() {
           <div><span className="eyebrow light">Relatos públicos</span><h2>A confiança de quem já foi atendido</h2><p>Os pacientes destacam a atenção durante as consultas, a clareza das explicações, a tranquilidade transmitida e o cuidado no acompanhamento.</p><p>São relatos que reforçam o compromisso com um atendimento humano, responsável e dedicado.</p></div>
           <div className="reviews-action"><strong>16</strong><span>opiniões publicadas na Doctoralia</span><a className="button white" href={siteConfig.contact.doctoralia} target="_blank" rel="noreferrer">Ver avaliações dos pacientes <ArrowRight size={18} /></a></div>
         </div>
+        <PatientReviewsCarousel />
       </section>
 
       <section className="section faq" id="duvidas">
@@ -322,8 +405,9 @@ export default function App() {
           <div className="contact-copy"><span className="eyebrow light">Agende sua consulta</span><h2>Dê o primeiro passo para cuidar da sua saúde</h2><p>Se você apresenta dificuldade para respirar, crises frequentes de sinusite, dores no ouvido, zumbido, tontura, perda auditiva, ronco ou problemas recorrentes nas amígdalas, procure uma avaliação especializada.</p><p>Entre em contato para consultar a disponibilidade e agendar seu atendimento.</p><WhatsAppLink className="button white" source="contact">Consultar disponibilidade <MessageCircle size={19} /></WhatsAppLink><div className="contact-doctor-id"><strong>Dr. Evaldo César Macau</strong><span>Otorrinolaringologista · CRM-MA 10415 · RQE 3698</span></div></div>
           <div className="contact-info">
             <div><MapPin /><span><small>{siteConfig.location.clinic}</small><strong>{contactText.address}</strong></span></div>
-            <div><Phone /><span><small>Telefone</small><strong>{contactText.phone}</strong></span></div>
+            <a href="tel:+5598991433929"><PhoneCall /><span><small>Telefone</small><strong>{contactText.phone}</strong></span></a>
             <div><Clock3 /><span><small>Atendimento</small><strong>{contactText.hours}</strong></span></div>
+            <a href={siteConfig.contact.instagram} target="_blank" rel="noreferrer" onClick={() => trackEvent('click_instagram', { source: 'contact' })}><InstagramIcon /><span><small>Instagram</small><strong>@drevaldomacau</strong></span></a>
             <a className="location-link" href={siteConfig.location.mapsUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent('click_directions')}><MapPin /> Ver localização <ArrowRight /></a>
           </div>
         </div>
@@ -334,7 +418,7 @@ export default function App() {
       <div className="container footer-grid">
         <div className="footer-brand"><img src={siteConfig.assets.logoDark} alt="Dr. Evaldo César Macau" width="344" height="82" /><p>Otorrinolaringologia com atenção, clareza e cuidado para adultos e crianças.</p><p><strong>CRM-MA 10415 · RQE 3698</strong></p></div>
         <div><h2>Navegação</h2>{navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}</div>
-        <div><h2>Contato</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer"><MessageCircle /> Agendamento online</a>{siteConfig.contact.instagram ? <a href={siteConfig.contact.instagram} target="_blank" rel="noreferrer"><AtSign /> Instagram</a> : <span className="placeholder-link"><AtSign /> Instagram a configurar</span>}<a href="#privacidade">Política de Privacidade</a></div>
+        <div><h2>Contato</h2><a href={whatsappUrl()} target="_blank" rel="noreferrer"><MessageCircle /> Agendamento online</a>{siteConfig.contact.instagram ? <a href={siteConfig.contact.instagram} target="_blank" rel="noreferrer"><InstagramIcon /> Instagram</a> : <span className="placeholder-link"><InstagramIcon /> Instagram a configurar</span>}<a href="#privacidade">Política de Privacidade</a></div>
       </div>
       <div className="container footer-bottom" id="privacidade"><p>© {new Date().getFullYear()} Dr. Evaldo César Macau. Todos os direitos reservados.</p><p>As informações deste site são educativas e não substituem consulta médica.</p></div>
     </footer>

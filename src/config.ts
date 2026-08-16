@@ -2,10 +2,10 @@ export const siteConfig = {
   doctor: { name: 'Dr. Evaldo César Macau', shortName: 'Dr. Evaldo', specialty: 'Otorrinolaringologia', crm: 'CRM-MA 10415', rqe: 'RQE 3698' },
   contact: {
     whatsapp: '',
-    phone: '',
+    phone: '(98) 99143-3929',
     address: 'Rua das Andirobas, 10, sala 405 — Jardim Renascença, São Luís — MA, CEP 65075-040',
     openingHours: '',
-    instagram: '',
+    instagram: 'https://www.instagram.com/drevaldomacau',
     officialUrl: 'https://SEU-DOMINIO.com.br',
     doctoralia: 'https://www.doctoralia.com.br/evaldo-cesar-macau/otorrino/santa-ines',
   },
