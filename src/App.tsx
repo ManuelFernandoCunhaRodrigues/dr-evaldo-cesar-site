@@ -195,18 +195,12 @@ function LocationsSection() {
 
 function Header() {
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
-    onScroll(); window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
   useEffect(() => {
     document.body.classList.toggle('menu-open', open)
     return () => document.body.classList.remove('menu-open')
   }, [open])
   return (
-    <header className={`site-header ${scrolled || open ? 'scrolled' : ''}`}>
+    <header className="site-header">
       <div className="container nav-wrap">
         <a className="brand" href="#inicio" aria-label="Dr. Evaldo César Macau — início">
           <img src={siteConfig.assets.logoLight} alt="Dr. Evaldo César Macau, Otorrinolaringologista" width="344" height="82" />
