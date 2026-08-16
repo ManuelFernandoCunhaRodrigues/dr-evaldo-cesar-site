@@ -189,6 +189,10 @@ export default function App() {
               <a className="button secondary" href="#sobre">Conheça o Dr. Evaldo <ArrowRight size={19} /></a>
             </div>
             <div className="hero-trust"><span><ShieldCheck size={18} /> Cuidado responsável</span><span><HeartHandshake size={18} /> Atendimento humanizado</span></div>
+            <div className="hero-certifications" aria-label="Certificações profissionais">
+              <img className="hero-residency-seal" src="/images/credentials/selo-residencia-medica-nota-a.webp" alt="Residência Médica Nota A — UNICAMP" width="1254" height="1254" />
+              <img className="hero-aborl-seal" src="/images/credentials/aborl-titulo-especialista.webp" alt="Título de Especialista — ABORL-CCF" width="2048" height="788" />
+            </div>
           </div>
           <div className="hero-visual reveal visible">
             <div className="portrait-shape"><div className="portrait-ring" /><img src={siteConfig.assets.hero} alt="Retrato profissional do Dr. Evaldo César Macau" width="1080" height="1620" fetchPriority="high" /></div>
