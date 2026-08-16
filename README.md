@@ -1,6 +1,6 @@
-# Site do Dr. Evaldo César Macau
+# Site — Dr. Evaldo César Macau
 
-Landing page responsiva para apresentação do atendimento em Otorrinolaringologia. O projeto usa vinext, React, TypeScript e Tailwind CSS, com geração otimizada para publicação no Sites.
+Landing page mobile-first em React, TypeScript e Vite para a atuação do Dr. Evaldo César Macau em Otorrinolaringologia.
 
 ## Desenvolvimento
 
@@ -9,38 +9,44 @@ npm install
 npm run dev
 ```
 
-Para validar a versão de produção:
+O Vite mostrará o endereço local do site no terminal.
+
+## Build de produção
 
 ```bash
 npm run build
+npm run preview
 ```
 
-## Atualizar informações
+Os arquivos finais serão gerados em `dist/`.
 
-Os dados comerciais ficam centralizados em `app/site-config.ts`:
+## Informações que precisam ser configuradas
 
-- `whatsappNumber`: número com DDI e DDD, somente dígitos;
-- `phone`: telefone de contato;
-- `instagramUrl`: endereço completo do perfil;
-- `address`, `mapsUrl` e `hours`: endereço, rota e horário de atendimento.
+Edite `src/config.ts` para substituir os campos ainda não informados:
 
-Enquanto o número não estiver preenchido, os botões abrem o seletor do WhatsApp com uma mensagem pronta, sem direcionar para um destinatário inventado.
+- número do WhatsApp com DDI e DDD;
+- telefone, endereço e horário de atendimento;
+- URL oficial e Instagram;
+- link do Google Maps.
 
-As fotografias oficiais estão em `public/assets/photos` e os logotipos, em `public/assets/logo`.
+CRM-MA 10415, RQE 3698, formação profissional e endereço da Clínica Rhinus já estão preenchidos conforme o conteúdo fornecido para o projeto.
 
-## Antes da publicação definitiva
+Depois de definir o domínio, substitua `https://SEU-DOMINIO.com.br` também em `index.html`, `public/robots.txt` e `public/sitemap.xml`.
 
-- Confirmar WhatsApp, telefone, Instagram e horários.
-- Confirmar endereço e link do Google Maps.
-- Substituir a URL canonical pelo domínio oficial.
-- Revisar a política de privacidade conforme os serviços de análise que forem adicionados.
-- Inserir Google Analytics ou Google Tag Manager somente com a configuração de consentimento adequada à LGPD.
+## Imagens e logos
+
+As fotografias oficiais ficam em `public/images/webp/` e os logos em `public/logos/`. Para trocar as imagens principais, altere os caminhos em `src/config.ts`, preservando arquivos WebP e textos alternativos descritivos.
+
+O card social fica em `public/og.png` e está conectado às metatags Open Graph e Twitter Card.
 
 ## SEO e acessibilidade
 
-- Uma única página com um único `h1` e hierarquia semântica de títulos.
-- Metadados Open Graph e Twitter Card.
-- Dados estruturados `Physician` e `FAQPage` apenas com informações apresentadas na página.
-- `robots.txt`, `sitemap.xml`, textos alternativos e foco visível.
-- Menu e FAQ navegáveis por teclado, áreas de toque mínimas e suporte a `prefers-reduced-motion`.
-- Eventos preparados no `dataLayer`: `click_whatsapp`, `click_directions` e `open_faq`.
+- Um único H1, hierarquia semântica de títulos e dados estruturados `Physician`.
+- Metatags, canonical, Open Graph, Twitter Card, robots e sitemap preparados.
+- Navegação por teclado, foco visível, link para pular conteúdo e FAQ acessível.
+- Áreas de toque com pelo menos 44 px e respeito a `prefers-reduced-motion`.
+- Dados comerciais não confirmados aparecem claramente como pendentes; não há credenciais, estatísticas ou depoimentos fictícios.
+
+## Eventos de conversão preparados
+
+Os cliques de WhatsApp e a abertura do FAQ enviam eventos para `window.dataLayer`, caso Google Tag Manager ou Analytics sejam adicionados posteriormente com a gestão de consentimento adequada à LGPD.
