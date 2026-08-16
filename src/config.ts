@@ -1,7 +1,7 @@
 export const siteConfig = {
   doctor: { name: 'Dr. Evaldo César Macau', shortName: 'Dr. Evaldo', specialty: 'Otorrinolaringologia', crm: 'CRM-MA 10415', rqe: 'RQE 3698' },
   contact: {
-    whatsapp: '',
+    whatsapp: '+55 98 9143-3929',
     phone: '(98) 99143-3929',
     address: 'Rua das Andirobas, 10, sala 405 — Jardim Renascença, São Luís — MA, CEP 65075-040',
     openingHours: '',
