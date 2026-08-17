@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
-  ArrowRight, CalendarCheck, Check, ChevronDown, CircleAlert, Clock3,
+  ArrowRight, CalendarCheck, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3,
   Ear, HeartHandshake, MapPin, Menu, MessageCircle,
   PhoneCall, ShieldCheck, Sparkles, Stethoscope, UserRoundCheck, X,
 } from 'lucide-react'
@@ -8,7 +8,7 @@ import { contactText, siteConfig, trackEvent, whatsappUrl } from './config'
 
 const navItems = [
   ['Início', '#inicio'], ['Sobre', '#sobre'], ['Especialidades', '#especialidades'],
-  ['Dúvidas', '#duvidas'], ['Contato', '#contato'],
+  ['Locais', '#locais'], ['Dúvidas', '#duvidas'], ['Contato', '#contato'],
 ] as const
 
 const specialties = [
@@ -22,11 +22,11 @@ const specialties = [
 
 const locations = [
   {
-    name: 'Clínica Rhinus',
-    subtitle: '',
+    name: 'Executive Lake Center',
+    subtitle: 'Clínica Rhinus',
     logo: '/logos/clinica-rhinus.png',
     logoAlt: 'Logotipo da Clínica Rhinus',
-    address: 'Rua das Andirobas, 10, sala 405, Jardim Renascença, São Luís – MA, CEP 65075-040.',
+    address: 'R. das Andirobas, 10 – sala 405\nJardim Renascença, São Luís – MA\nCEP 65075-040',
     reference: 'Próximo à Lagoa da Jansen.',
     mapsUrl: 'https://share.google/MG1haMyEcS3pog2UO',
     whatsappMessage: 'Olá! Gostaria de agendar uma consulta com o Dr. Evaldo César Macau na Clínica Rhinus.',
@@ -36,7 +36,7 @@ const locations = [
     subtitle: 'UDI Hospital',
     logo: '/logos/udi.svg',
     logoAlt: 'Logotipo da UDI Hospital',
-    address: 'Avenida Professor Carlos Cunha, 1, Edifício Medical Center Jaracaty, 2º andar, Jaracaty, São Luís – MA, CEP 65076-820.',
+    address: 'Av. Professor Carlos Cunha, 1\nMedical Center Jaracaty – 2º andar\nJaracaty, São Luís – MA · CEP 65076-820',
     reference: '',
     mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Unidade%20Medical%20Center%20Jaracaty%2C%20Avenida%20Professor%20Carlos%20Cunha%2C%201%2C%20Edif%C3%ADcio%20Medical%20Center%20Jaracaty%2C%202%C2%BA%20andar%2C%20Jaracaty%2C%20S%C3%A3o%20Lu%C3%ADs%20-%20MA%2C%2065076-820',
     whatsappMessage: 'Olá! Gostaria de agendar uma consulta com o Dr. Evaldo César Macau na Unidade Medical Center Jaracaty.',
@@ -107,7 +107,6 @@ function PatientReviewsCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
   const [cardsPerView, setCardsPerView] = useState(1)
   const [activePage, setActivePage] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
   const pageCount = Math.ceil(patientReviews.length / cardsPerView)
 
   useEffect(() => {
@@ -128,17 +127,23 @@ function PatientReviewsCarousel() {
     track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' })
   }, [activePage, cardsPerView])
 
-  useEffect(() => {
-    if (isPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const timer = window.setInterval(() => setActivePage((current) => (current + 1) % pageCount), 2500)
-    return () => window.clearInterval(timer)
-  }, [isPaused, pageCount])
+  const goToPage = (page: number) => setActivePage(Math.max(0, Math.min(page, pageCount - 1)))
+  const handleScroll = () => {
+    const track = trackRef.current
+    const cards = Array.from(track?.querySelectorAll<HTMLElement>('.patient-review') ?? [])
+    if (!track || !cards.length) return
+    const closestCard = cards.reduce((closest, card, index) => {
+      const distance = Math.abs(card.offsetLeft - track.offsetLeft - track.scrollLeft)
+      return distance < closest.distance ? { index, distance } : closest
+    }, { index: 0, distance: Number.POSITIVE_INFINITY })
+    setActivePage(Math.min(Math.floor(closestCard.index / cardsPerView), pageCount - 1))
+  }
 
-  return <div className="container patient-reviews reveal" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onFocusCapture={() => setIsPaused(true)} onBlurCapture={() => setIsPaused(false)}>
+  return <div className="container patient-reviews reveal">
     <div className="reviews-carousel-heading">
       <div><span className="eyebrow">Opiniões verificadas</span><h3>Experiências compartilhadas por pacientes</h3></div>
     </div>
-    <div className="patient-reviews-track" ref={trackRef} role="region" aria-label="Opiniões dos pacientes" tabIndex={0}>
+    <div className="patient-reviews-track" ref={trackRef} role="region" aria-label="Opiniões dos pacientes. Arraste horizontalmente ou use os controles." tabIndex={0} onScroll={handleScroll}>
       {patientReviews.map(({ name, date, location, text }) => <article className="patient-review" key={`${name}-${date}`}>
         <div className="patient-review-header">
           <span className="review-avatar" aria-hidden="true">{name.charAt(0)}</span>
@@ -148,8 +153,10 @@ function PatientReviewsCarousel() {
         <footer><span>{date} · {location}</span><a href={siteConfig.contact.doctoralia} target="_blank" rel="noreferrer">Doctoralia <ArrowRight size={15} /></a></footer>
       </article>)}
     </div>
-    <div className="reviews-carousel-dots" aria-label="Navegação das opiniões">
-      {Array.from({ length: pageCount }, (_, index) => <button className={index === activePage ? 'active' : ''} type="button" aria-label={`Ir para o grupo ${index + 1} de opiniões`} aria-current={index === activePage ? 'true' : undefined} onClick={() => setActivePage(index)} key={index} />)}
+    <div className="reviews-carousel-controls" aria-label="Navegação das opiniões">
+      <button type="button" aria-label="Ver opiniões anteriores" onClick={() => goToPage(activePage - 1)} disabled={activePage === 0}><ChevronLeft /></button>
+      <span aria-live="polite">{activePage + 1} de {pageCount}</span>
+      <button type="button" aria-label="Ver próximas opiniões" onClick={() => goToPage(activePage + 1)} disabled={activePage === pageCount - 1}><ChevronRight /></button>
     </div>
   </div>
 }
@@ -157,7 +164,7 @@ function PatientReviewsCarousel() {
 const faqs = [
   ['Quando devo procurar um otorrinolaringologista?', 'Quando houver sintomas persistentes ou recorrentes relacionados à audição, nariz, garganta, voz, equilíbrio, respiração ou sono. A avaliação médica ajuda a compreender cada caso.'],
   ['Quais regiões do corpo são avaliadas pelo otorrino?', 'O otorrinolaringologista avalia principalmente ouvidos, nariz e garganta, além de estruturas relacionadas da cabeça e do pescoço.'],
-  ['Como posso agendar uma consulta?', 'Use um dos botões de agendamento desta página para consultar a disponibilidade. O WhatsApp será ativado assim que o número oficial for configurado.'],
+  ['Como posso agendar uma consulta?', 'Use um dos botões de agendamento desta página para falar com a equipe pelo WhatsApp e consultar a disponibilidade.'],
   ['Onde ficam os locais de atendimento?', 'O atendimento é realizado no Executive Lake Center, no Jardim Renascença, e na Unidade Medical Center Jaracaty, no UDI Hospital, em São Luís — MA.'],
   ['Quais informações devo levar para a consulta?', 'Leve um documento de identificação e, se tiver, exames anteriores, receitas em uso e anotações sobre os sintomas que deseja relatar.'],
   ['O atendimento é particular ou aceita convênio?', 'Essa informação ainda será confirmada. Consulte diretamente a equipe antes de agendar.'],
@@ -173,7 +180,7 @@ function WhatsAppLink({ children, className = 'button primary', source, message 
 }
 
 function LocationsSection() {
-  return <section className="section locations" aria-labelledby="locations-title">
+  return <section className="section locations" id="locais" aria-labelledby="locations-title">
     <div className="container">
       <SectionTitle eyebrow="Onde encontrar" title="Locais de atendimento" text="Escolha a unidade mais conveniente e entre em contato para agendar sua consulta com o Dr. Evaldo César Macau." centered id="locations-title" />
       <div className="locations-grid">
@@ -184,7 +191,7 @@ function LocationsSection() {
           <address>{location.address}</address>
           {location.reference && <p className="location-reference">{location.reference}</p>}
           <div className="location-actions">
-            <a className="button secondary" href={location.mapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Ver rota para ${location.name}`} onClick={() => trackEvent('click_directions', { location: location.name })}>Ver rota <ArrowRight size={18} /></a>
+            <a className="button secondary" href={location.mapsUrl} target="_blank" rel="noopener noreferrer" aria-label={`Ver rota para ${location.name} no Google Maps`} onClick={() => trackEvent('click_directions', { location: location.name })}>Ver rota no Google Maps <ArrowRight size={18} /></a>
             <WhatsAppLink source={`location-${index + 1}`} message={location.whatsappMessage}>Agendar nesta unidade <MessageCircle size={18} /></WhatsAppLink>
           </div>
         </article>)}
@@ -195,12 +202,56 @@ function LocationsSection() {
 
 function Header() {
   const [open, setOpen] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const wasOpenRef = useRef(false)
+
   useEffect(() => {
     document.body.classList.toggle('menu-open', open)
-    return () => document.body.classList.remove('menu-open')
+    document.documentElement.classList.toggle('menu-open', open)
+    let focusTimer: number | undefined
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setOpen(false)
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      const focusable = Array.from(headerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
+        .filter((element) => element.offsetParent !== null)
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    if (open) {
+      wasOpenRef.current = true
+      document.addEventListener('keydown', onKeyDown)
+      focusTimer = window.setTimeout(() => menuRef.current?.querySelector<HTMLElement>('a[href]')?.focus(), 30)
+    } else if (wasOpenRef.current) {
+      toggleRef.current?.focus({ preventScroll: true })
+      wasOpenRef.current = false
+    }
+
+    return () => {
+      document.body.classList.remove('menu-open')
+      document.documentElement.classList.remove('menu-open')
+      document.removeEventListener('keydown', onKeyDown)
+      if (focusTimer) window.clearTimeout(focusTimer)
+    }
   }, [open])
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       <div className="container nav-wrap">
         <a className="brand" href="#inicio" aria-label="Dr. Evaldo César Macau — início">
           <img src={siteConfig.assets.logoLight} alt="Dr. Evaldo César Macau, Otorrinolaringologista" width="344" height="82" />
@@ -209,13 +260,20 @@ function Header() {
           {navItems.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         </nav>
         <WhatsAppLink className="button primary nav-cta" source="header">Agendar consulta <ArrowRight size={17} /></WhatsAppLink>
-        <button className="menu-toggle" type="button" aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
+        <button className="menu-toggle" ref={toggleRef} type="button" aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="mobile-menu" onClick={() => setOpen(!open)}>
           {open ? <X /> : <Menu />}
         </button>
       </div>
-      <div id="mobile-menu" className={`mobile-menu ${open ? 'open' : ''}`} aria-hidden={!open}>
-        <nav aria-label="Navegação mobile">
-          {navItems.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}<ArrowRight size={18} /></a>)}
+      <div id="mobile-menu" ref={menuRef} className={`mobile-menu ${open ? 'open' : ''}`} aria-hidden={!open} inert={!open ? true : undefined}>
+        <nav aria-label="Navegação mobile" onClick={(event) => { if ((event.target as HTMLElement).closest('a')) setOpen(false) }}>
+          {navItems.map(([label, href]) => <a key={href} href={href} onClick={(event) => {
+            event.preventDefault()
+            setOpen(false)
+            window.setTimeout(() => {
+              window.history.pushState(null, '', href)
+              document.querySelector(href)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+            }, 80)
+          }}>{label}<ArrowRight size={18} /></a>)}
           <WhatsAppLink source="mobile-menu">Agendar consulta <MessageCircle size={18} /></WhatsAppLink>
         </nav>
       </div>
@@ -229,15 +287,48 @@ function SectionTitle({ eyebrow, title, text, centered = false, id }: { eyebrow:
   </div>
 }
 
-function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
-  const [open, setOpen] = useState(false)
+function FAQItem({ question, answer, index, open, onToggle }: { question: string; answer: string; index: number; open: boolean; onToggle: () => void }) {
   const contentId = `faq-content-${index}`
   return <div className={`faq-item ${open ? 'open' : ''}`}>
-    <h3><button type="button" aria-expanded={open} aria-controls={contentId} onClick={() => { setOpen(!open); if (!open) trackEvent('open_faq', { question }) }}>
+    <h3><button type="button" aria-expanded={open} aria-controls={contentId} onClick={() => { onToggle(); if (!open) trackEvent('open_faq', { question }) }}>
       <span>{question}</span><ChevronDown aria-hidden="true" />
     </button></h3>
     <div id={contentId} className="faq-answer" role="region" aria-hidden={!open}><p>{answer}</p></div>
   </div>
+}
+
+function FAQList() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
+  return <div className="faq-list reveal">{faqs.map(([question, answer], index) => (
+    <FAQItem key={question} question={question} answer={answer} index={index} open={openIndex === index} onToggle={() => setOpenIndex(openIndex === index ? null : index)} />
+  ))}</div>
+}
+
+function MobileStickyCTA() {
+  const [heroVisible, setHeroVisible] = useState(true)
+  const [contactVisible, setContactVisible] = useState(false)
+  const [footerVisible, setFooterVisible] = useState(false)
+
+  useEffect(() => {
+    const hero = document.querySelector('#inicio')
+    const contact = document.querySelector('#contato')
+    const footer = document.querySelector('.footer')
+    if (!hero || !contact || !footer) return
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.target === hero) setHeroVisible(entry.isIntersecting)
+        if (entry.target === contact) setContactVisible(entry.isIntersecting)
+        if (entry.target === footer) setFooterVisible(entry.isIntersecting)
+      })
+    }, { threshold: 0.05, rootMargin: '-72px 0px 0px' })
+    observer.observe(hero)
+    observer.observe(contact)
+    observer.observe(footer)
+    return () => observer.disconnect()
+  }, [])
+
+  if (heroVisible || contactVisible || footerVisible) return null
+  return <div className="mobile-cta-bar"><WhatsAppLink source="mobile-sticky"><MessageCircle /> <span>Agendar pelo WhatsApp</span></WhatsAppLink></div>
 }
 
 export default function App() {
@@ -256,18 +347,20 @@ export default function App() {
         <div className="hero-orb orb-one" /><div className="hero-orb orb-two" />
         <div className="container hero-grid">
           <div className="hero-copy reveal visible">
-            <span className="eyebrow"><MapPin size={15} /> Otorrinolaringologista em São Luís — MA</span>
-            <h1>Cuidado especializado para a saúde do <em>ouvido, nariz e garganta</em></h1>
-            <p>Atendimento otorrinolaringológico para adultos e crianças, com escuta atenta, explicações claras e acompanhamento individualizado.</p>
-            <div className="doctor-id"><strong>Dr. Evaldo César Macau</strong><span>Otorrinolaringologista · CRM-MA 10415 · RQE 3698</span></div>
+            <span className="eyebrow"><MapPin size={15} /> Otorrinolaringologista em São Luís</span>
+            <div className="hero-doctor"><strong>Dr. Evaldo César Macau</strong><span>CRM-MA 10415 · RQE 3698</span></div>
+            <h1>Cuidado especializado para <em>ouvido, nariz e garganta</em></h1>
+            <p>Avaliação de dor de ouvido, zumbido, perda auditiva, rinite, sinusite, tontura e vertigem, com escuta atenta para adultos e crianças.</p>
             <div className="hero-actions">
-              <WhatsAppLink source="hero">Agendar consulta <MessageCircle size={19} /></WhatsAppLink>
-              <a className="button secondary" href="#sobre">Conheça o Dr. Evaldo <ArrowRight size={19} /></a>
+              <WhatsAppLink source="hero">Agendar consulta pelo WhatsApp <MessageCircle size={19} /></WhatsAppLink>
+              <a className="hero-location-link" href="#locais"><MapPin size={18} /> Ver locais de atendimento <ArrowRight size={18} /></a>
             </div>
-            <div className="hero-trust"><span><ShieldCheck size={18} /> Cuidado responsável</span><span><HeartHandshake size={18} /> Atendimento humanizado</span></div>
-            <div className="hero-certifications" aria-label="Certificações profissionais">
-              <img className="hero-residency-seal" src="/images/credentials/selo-residencia-medica-nota-a.webp" alt="Residência Médica Nota A — UNICAMP" width="1254" height="1254" />
-              <img className="hero-aborl-seal" src="/images/credentials/aborl-titulo-especialista.webp" alt="Título de Especialista — ABORL-CCF" width="2048" height="788" />
+            <div className="hero-proof">
+              <div className="hero-trust"><span><ShieldCheck size={18} /> Cuidado responsável</span><span><HeartHandshake size={18} /> Atendimento humanizado</span></div>
+              <div className="hero-certifications" aria-label="Certificações profissionais">
+                <img className="hero-residency-seal" src="/images/credentials/selo-residencia-medica-nota-a.webp" alt="Residência Médica Nota A — UNICAMP" width="1254" height="1254" loading="lazy" />
+                <img className="hero-aborl-seal" src="/images/credentials/aborl-titulo-especialista.webp" alt="Título de Especialista — ABORL-CCF" width="2048" height="788" loading="lazy" />
+              </div>
             </div>
           </div>
           <div className="hero-visual reveal visible">
@@ -280,18 +373,6 @@ export default function App() {
         <a className="scroll-cue" href="#especialidades" aria-label="Ir para especialidades"><span>Explore</span><ChevronDown /></a>
       </section>
 
-      <section className="section quality-life">
-        <div className="container quality-grid">
-          <div className="quality-heading reveal"><span className="eyebrow">Saúde e bem-estar</span><h2>Cuidar da sua saúde também é cuidar da sua qualidade de vida</h2></div>
-          <div className="quality-copy reveal">
-            <p>Dificuldades para respirar, dores no ouvido, infecções recorrentes, tontura, zumbido e alterações na audição podem afetar o sono, a comunicação e o bem-estar.</p>
-            <p>A avaliação com um otorrinolaringologista ajuda a investigar esses sintomas e identificar a conduta mais adequada para cada caso.</p>
-            <p>Aqui, cada paciente é recebido com atenção, respeito e informações claras durante todas as etapas do atendimento.</p>
-            <WhatsAppLink source="quality-life">Quero agendar uma avaliação <ArrowRight size={19} /></WhatsAppLink>
-          </div>
-        </div>
-      </section>
-
       <section className="section specialties" id="especialidades">
         <div className="container">
           <SectionTitle eyebrow="Ouvidos, nariz e garganta" title="Áreas de atendimento" text="Avaliação especializada para adultos e crianças, respeitando as necessidades de cada fase da vida." centered />
@@ -301,6 +382,18 @@ export default function App() {
             </article>)}
           </div>
           <div className="center-action reveal"><WhatsAppLink source="after-specialties">Quero agendar uma avaliação <MessageCircle size={19} /></WhatsAppLink></div>
+        </div>
+      </section>
+
+      <section className="section quality-life">
+        <div className="container quality-grid">
+          <div className="quality-heading reveal"><span className="eyebrow">Saúde e bem-estar</span><h2>Cuidar da sua saúde também é cuidar da sua qualidade de vida</h2></div>
+          <div className="quality-copy reveal">
+            <p>Dificuldades para respirar, dores no ouvido, infecções recorrentes, tontura, zumbido e alterações na audição podem afetar o sono, a comunicação e o bem-estar.</p>
+            <p>A avaliação com um otorrinolaringologista ajuda a investigar esses sintomas e identificar a conduta mais adequada para cada caso.</p>
+            <p>Aqui, cada paciente é recebido com atenção, respeito e informações claras durante todas as etapas do atendimento.</p>
+            <WhatsAppLink source="quality-life">Quero agendar uma avaliação <ArrowRight size={19} /></WhatsAppLink>
+          </div>
         </div>
       </section>
 
@@ -316,8 +409,13 @@ export default function App() {
             <h2>Conheça o Dr. Evaldo Macau</h2>
             <p>Sou médico otorrinolaringologista, graduado em Medicina pela Universidade Federal do Maranhão — UFMA, com residência médica em Otorrinolaringologia pela Universidade Estadual de Campinas — UNICAMP.</p>
             <p>Possuo Título de Especialista em Otorrinolaringologia pela ABORL-CCF e realizei estágio especializado em Otoneurologia na Universidade de Lisboa, em Portugal.</p>
-            <p>Atuo no atendimento de adultos e crianças, realizando consultas, exames e avaliações cirúrgicas. Tenho dedicação especial às cirurgias nasais e faríngeas na infância e ao acompanhamento de pacientes com tontura, vertigem, perda auditiva e zumbido.</p>
-            <p>Procuro explicar cada etapa de maneira clara e oferecer um atendimento acolhedor e individualizado. Seja bem-vindo.</p>
+            <details className="about-more">
+              <summary>Ver trajetória e abordagem completas</summary>
+              <div>
+                <p>Atuo no atendimento de adultos e crianças, realizando consultas, exames e avaliações cirúrgicas. Tenho dedicação especial às cirurgias nasais e faríngeas na infância e ao acompanhamento de pacientes com tontura, vertigem, perda auditiva e zumbido.</p>
+                <p>Procuro explicar cada etapa de maneira clara e oferecer um atendimento acolhedor e individualizado. Seja bem-vindo.</p>
+              </div>
+            </details>
             <ul className="check-list"><li><Check /> CRM-MA 10415</li><li><Check /> RQE 3698</li><li><Check /> Atendimento para adultos e crianças</li></ul>
             <WhatsAppLink source="about">Agendar uma consulta <ArrowRight size={19} /></WhatsAppLink>
           </div>
@@ -390,7 +488,7 @@ export default function App() {
       <section className="section faq" id="duvidas">
         <div className="container faq-grid">
           <div className="faq-intro reveal"><span className="eyebrow">Dúvidas frequentes</span><h2>Informação clara também faz parte do cuidado</h2><p>Encontre respostas objetivas sobre a consulta e o atendimento.</p><WhatsAppLink className="text-link" source="faq">Ainda tem dúvidas? Fale conosco <ArrowRight size={18} /></WhatsAppLink></div>
-          <div className="faq-list reveal">{faqs.map(([q, a], i) => <FAQItem key={q} question={q} answer={a} index={i} />)}</div>
+          <FAQList />
         </div>
       </section>
 
@@ -415,6 +513,6 @@ export default function App() {
       </div>
       <div className="container footer-bottom" id="privacidade"><p>© {new Date().getFullYear()} Dr. Evaldo César Macau. Todos os direitos reservados.</p><p>As informações deste site são educativas e não substituem consulta médica.</p></div>
     </footer>
-    <WhatsAppLink className="floating-whatsapp" source="floating" ><MessageCircle /><span>Agendar</span></WhatsAppLink>
+    <MobileStickyCTA />
   </>
 }
