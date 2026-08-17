@@ -105,6 +105,7 @@ const patientReviews = [
 
 function PatientReviewsCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
+  const scrollEndTimerRef = useRef<number | null>(null)
   const [cardsPerView, setCardsPerView] = useState(1)
   const [activePage, setActivePage] = useState(0)
   const pageCount = Math.ceil(patientReviews.length / cardsPerView)
@@ -120,6 +121,10 @@ function PatientReviewsCarousel() {
     setActivePage((current) => Math.min(current, pageCount - 1))
   }, [pageCount])
 
+  useEffect(() => () => {
+    if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current)
+  }, [])
+
   useEffect(() => {
     const track = trackRef.current
     const card = track?.querySelectorAll<HTMLElement>('.patient-review')[activePage * cardsPerView]
@@ -129,14 +134,17 @@ function PatientReviewsCarousel() {
 
   const goToPage = (page: number) => setActivePage(Math.max(0, Math.min(page, pageCount - 1)))
   const handleScroll = () => {
-    const track = trackRef.current
-    const cards = Array.from(track?.querySelectorAll<HTMLElement>('.patient-review') ?? [])
-    if (!track || !cards.length) return
-    const closestCard = cards.reduce((closest, card, index) => {
-      const distance = Math.abs(card.offsetLeft - track.offsetLeft - track.scrollLeft)
-      return distance < closest.distance ? { index, distance } : closest
-    }, { index: 0, distance: Number.POSITIVE_INFINITY })
-    setActivePage(Math.min(Math.floor(closestCard.index / cardsPerView), pageCount - 1))
+    if (scrollEndTimerRef.current !== null) window.clearTimeout(scrollEndTimerRef.current)
+    scrollEndTimerRef.current = window.setTimeout(() => {
+      const track = trackRef.current
+      const cards = Array.from(track?.querySelectorAll<HTMLElement>('.patient-review') ?? [])
+      if (!track || !cards.length) return
+      const closestCard = cards.reduce((closest, card, index) => {
+        const distance = Math.abs(card.offsetLeft - track.offsetLeft - track.scrollLeft)
+        return distance < closest.distance ? { index, distance } : closest
+      }, { index: 0, distance: Number.POSITIVE_INFINITY })
+      setActivePage(Math.min(Math.floor(closestCard.index / cardsPerView), pageCount - 1))
+    }, 160)
   }
 
   return <div className="container patient-reviews reveal">
